@@ -1,34 +1,57 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 
 public class EnemyMovement : MonoBehaviour
 {
-    Vector3 startPos;
-    public CharacterController enemy;
-    //placeHolder playerTrigger
-    bool playerTrigger;
+    //change when you get the class for player
+    Vector3 PlayerLocation = new Vector3(0, 0, 0);
+
+    Vector3 EnemyLocation = new Vector3();
+
+
+    //
+    public enum AIState { IDLE, PATROL, ATTACK};
+
+    AIState state = AIState.IDLE;
+
+    NavMeshAgent agent;
+
+ 
+    //Enemy Speed
+    public float speed = 2;
     
     void Start()
     {
-        enemy = GetComponent<CharacterController>();
+        agent = GetComponent<NavMeshAgent>();
+
     }
 
     // Update is called once per frame
     void Update()
     {
-        if(playerTrigger == false)
+
+        switch (state)
         {
-            EnemyMove(Time.deltaTime);
+            case AIState.IDLE:
+
+                break;
+            case AIState.PATROL:
+                Patrol(Time.deltaTime);
+                break;
+        }
+    }
+    void Idle()
+    {
+        if(10 != 9)
+        {
+            state = AIState.ATTACK;
         }
     }
 
-    void EnemyMove(float delta)
+    void Patrol(float delta)
     {
-        float x = Random.Range(-1f, 1f);
-        float z = Random.Range(-1f, 1f);
 
-        Vector3 move = new Vector3(x, 0, z);
-        enemy.Move(move * delta*2);
     }
 }
