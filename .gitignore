@@ -59,5 +59,10 @@ sysinfo.txt
 crashlytics-build.properties
 
 # Custom Ignores
+<<<<<<< HEAD
 Assets/Graphics/
 Assets/Audio/
+=======
+
+Assets/Graphics/
+>>>>>>> Ethan
