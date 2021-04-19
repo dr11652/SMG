@@ -8,7 +8,7 @@ public class EnemyMovement : MonoBehaviour
     //change when you get the class for player
     Vector3 PlayerLocation = new Vector3(0, 0, 0);
 
-    Vector3 EnemyLocation = new Vector3(-2,1,-4);
+    Vector3 EnemyLocation = new Vector3();
 
     
     public enum AIState { IDLE, PATROL, ATTACK};
@@ -16,15 +16,15 @@ public class EnemyMovement : MonoBehaviour
     AIState state = AIState.PATROL;
 
     NavMeshAgent agent;
+    public Transform[] goals;
+    public int patrolTarget = 0;
 
- 
     //Enemy Speed
     public float speed = 2;
     
     void Start()
     {
         agent = GetComponent<NavMeshAgent>();
-
     }
 
     // Update is called once per frame
@@ -38,10 +38,10 @@ public class EnemyMovement : MonoBehaviour
                 Idle(Time.deltaTime);
                 break;
             case AIState.PATROL:
-                Patrol(Time.deltaTime, EnemyLocation);
+                Patrol();
                 break;
             case AIState.ATTACK:
-                Patrol(Time.deltaTime, PlayerLocation);
+               // Patrol(Time.deltaTime, PlayerLocation);
                 break;
         }
     }
@@ -54,8 +54,14 @@ public class EnemyMovement : MonoBehaviour
         }
     }
 
-    void Patrol(float delta, Vector3 Destination)
+    void Patrol()
     {
-        agent.Move(Destination*delta*speed);
+        if (agent.remainingDistance > .2f) {
+            agent.SetDestination(goals[patrolTarget].position);
+        } else {
+            patrolTarget++;
+        }
+
+        Debug.Log(agent.remainingDistance);
     }
 }
