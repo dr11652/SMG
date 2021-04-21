@@ -25,6 +25,7 @@ public class EnemyMovement : MonoBehaviour
     void Start()
     {
         agent = GetComponent<NavMeshAgent>();
+        agent.SetDestination(goals[0].position);
     }
 
     // Update is called once per frame
@@ -58,8 +59,11 @@ public class EnemyMovement : MonoBehaviour
     {
         if (agent.remainingDistance > .2f) {
             agent.SetDestination(goals[patrolTarget].position);
+        } else if (patrolTarget >= 4){
+            patrolTarget = -1;
         } else {
             patrolTarget++;
+            agent.SetDestination(goals[patrolTarget].position);
         }
 
         Debug.Log(agent.remainingDistance);
