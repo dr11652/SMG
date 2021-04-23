@@ -6,9 +6,9 @@ using UnityEngine.AI;
 public class EnemyMovement : MonoBehaviour
 {
     //change when you get the class for player
-    Vector3 PlayerLocation = new Vector3(0, 0, 0);
+    public Transform playerLocation;
 
-    Vector3 EnemyLocation = new Vector3();
+    public Transform enemyLocation;
 
     
     public enum AIState { IDLE, PATROL, ATTACK};
@@ -18,6 +18,7 @@ public class EnemyMovement : MonoBehaviour
     NavMeshAgent agent;
     public Transform[] goals;
     public int patrolTarget = 0;
+    
 
     //Enemy Speed
     public float speed = 2;
@@ -49,7 +50,7 @@ public class EnemyMovement : MonoBehaviour
     void Idle(float delta)
     {
         //This needs to have come back to after I get the player class and i can pull the location
-        if (PlayerLocation == EnemyLocation);
+        if (playerLocation == enemyLocation);
         {
             state = AIState.ATTACK;
         }
@@ -57,15 +58,22 @@ public class EnemyMovement : MonoBehaviour
 
     void Patrol()
     {
-        if (agent.remainingDistance > .2f) {
-            agent.SetDestination(goals[patrolTarget].position);
-        } else if (patrolTarget >= 4){
-            patrolTarget = -1;
-        } else {
-            patrolTarget++;
-            agent.SetDestination(goals[patrolTarget].position);
-        }
+            if (agent.remainingDistance > .2f)
+            {
+                agent.SetDestination(goals[patrolTarget].position);
+            }
+            else if (patrolTarget >= 4)
+            {
+                patrolTarget = -1;
+            }
+            else
+            {
+                patrolTarget++;
+                agent.SetDestination(goals[patrolTarget].position);
+            }
+        
 
+        Debug.Log(state);
         Debug.Log(agent.remainingDistance);
     }
 }
