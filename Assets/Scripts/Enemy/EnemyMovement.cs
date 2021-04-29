@@ -10,10 +10,11 @@ public class EnemyMovement : MonoBehaviour
 
     public Transform enemyLocation;
 
+    public float idleTimer = 0;
     
     public enum AIState { IDLE, PATROL, ATTACK};
 
-    AIState state = AIState.PATROL;
+    AIState state = AIState.IDLE;
 
     NavMeshAgent agent;
     public Transform[] goals;
@@ -37,7 +38,7 @@ public class EnemyMovement : MonoBehaviour
         {
             case AIState.IDLE:
                 //Animation of the zombie
-                Idle(Time.deltaTime);
+                Idle();
                 break;
             case AIState.PATROL:
                 Patrol();
@@ -47,33 +48,51 @@ public class EnemyMovement : MonoBehaviour
                 break;
         }
     }
-    void Idle(float delta)
+    void Idle()
     {
         //This needs to have come back to after I get the player class and i can pull the location
-        if (playerLocation == enemyLocation);
+        agent.isStopped = true;
+        if (agent.remainingDistance <= 5)
         {
+            agent.isStopped = false;
             state = AIState.ATTACK;
+        } else
+        {
+            idleTimer += Time.deltaTime;
+            if(idleTimer > 5)
+            {
+                agent.isStopped = false;
+                state = AIState.PATROL;
+                idleTimer = 0;
+            }
         }
+
+        Debug.Log(idleTimer);
+        Debug.Log(state);
+        Debug.Log(agent.remainingDistance);
+       
     }
 
     void Patrol()
     {
-            if (agent.remainingDistance > .2f)
-            {
-                agent.SetDestination(goals[patrolTarget].position);
-            }
-            else if (patrolTarget >= 4)
-            {
-                patrolTarget = -1;
-            }
-            else
-            {
-                patrolTarget++;
-                agent.SetDestination(goals[patrolTarget].position);
-            }
+        if (agent.remainingDistance > .2f)
+        {
+            agent.SetDestination(goals[patrolTarget].position);
+        }
+        else
+        { 
+            //Make Random
+            int rand = Random.Range(0, 3);
+            patrolTarget = rand;
+            agent.SetDestination(playerLocation.position);
+            state = AIState.IDLE;
+            
+           
+        }
         
 
         Debug.Log(state);
         Debug.Log(agent.remainingDistance);
+        Debug.Log(patrolTarget);
     }
 }
