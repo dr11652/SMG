@@ -5,25 +5,20 @@ using UnityEngine.AI;
 
 public class EnemyMovement : MonoBehaviour
 {
-    //change when you get the class for player
     public Transform playerLocation;
 
     public Transform enemyLocation;
 
     public float idleTimer = 0;
-    
-    public enum AIState { IDLE, PATROL, ATTACK};
 
-    AIState state = AIState.IDLE;
+    public enum AIState { IDLE, PATROL, ATTACK };
+
+    public AIState state = AIState.PATROL;
 
     NavMeshAgent agent;
     public Transform[] goals;
     public int patrolTarget = 0;
-    
 
-    //Enemy Speed
-    public float speed = 2;
-    
     void Start()
     {
         agent = GetComponent<NavMeshAgent>();
@@ -50,22 +45,21 @@ public class EnemyMovement : MonoBehaviour
     }
     void Idle()
     {
-        //This needs to have come back to after I get the player class and i can pull the location
-        agent.isStopped = true;
-        if (agent.remainingDistance <= 5)
+        //increment timer as long as timer less than something
+        if(idleTimer < 5)
         {
-            agent.isStopped = false;
-            state = AIState.ATTACK;
+            agent.isStopped = true;
+            idleTimer += Time.deltaTime;
         } else
         {
-            idleTimer += Time.deltaTime;
-            if(idleTimer > 5)
-            {
-                agent.isStopped = false;
-                state = AIState.PATROL;
-                idleTimer = 0;
-            }
+            agent.isStopped = false; //free up agent
+            patrolTarget = Random.Range(0, goals.Length); //choose a goal
+            agent.SetDestination(goals[patrolTarget].position); //send agent to new goal
+            state = AIState.PATROL; //swap states
+            idleTimer = 0; //reset timer
         }
+
+        //if timer runs out, switch to patrol, set a patrol destination
 
         Debug.Log(idleTimer);
         Debug.Log(state);
@@ -75,24 +69,12 @@ public class EnemyMovement : MonoBehaviour
 
     void Patrol()
     {
-        if (agent.remainingDistance > .2f)
+        if (agent.remainingDistance < .2f)
         {
-            agent.SetDestination(goals[patrolTarget].position);
-        }
-        else
-        { 
             //Make Random
-            int rand = Random.Range(0, 3);
-            patrolTarget = rand;
-            agent.SetDestination(playerLocation.position);
             state = AIState.IDLE;
-            
-           
         }
         
-
-        Debug.Log(state);
         Debug.Log(agent.remainingDistance);
-        Debug.Log(patrolTarget);
     }
 }

@@ -402,6 +402,7 @@ MonoBehaviour:
   - {fileID: 572343212}
   - {fileID: 1851162650}
   patrolTarget: 0
+  Goals: {fileID: 1820671634}
   speed: 2
 --- !u!136 &297786064
 CapsuleCollider:
