@@ -5,26 +5,24 @@ using UnityEngine.AI;
 
 public class EnemyMovement : MonoBehaviour
 {
-    //change when you get the class for player
-    Vector3 PlayerLocation = new Vector3(0, 0, 0);
+    public Transform playerLocation;
 
-    Vector3 EnemyLocation = new Vector3(-2,1,-4);
+    public Transform enemyLocation;
 
-    
-    public enum AIState { IDLE, PATROL, ATTACK};
+    public float idleTimer = 0;
 
-    AIState state = AIState.PATROL;
+    public enum AIState { IDLE, PATROL, ATTACK };
+
+    public AIState state = AIState.PATROL;
 
     NavMeshAgent agent;
+    public Transform[] goals;
+    public int patrolTarget = 0;
 
- 
-    //Enemy Speed
-    public float speed = 2;
-    
     void Start()
     {
         agent = GetComponent<NavMeshAgent>();
-
+        agent.SetDestination(goals[0].position);
     }
 
     // Update is called once per frame
@@ -35,27 +33,48 @@ public class EnemyMovement : MonoBehaviour
         {
             case AIState.IDLE:
                 //Animation of the zombie
-                Idle(Time.deltaTime);
+                Idle();
                 break;
             case AIState.PATROL:
-                Patrol(Time.deltaTime, EnemyLocation);
+                Patrol();
                 break;
             case AIState.ATTACK:
-                Patrol(Time.deltaTime, PlayerLocation);
+               // Patrol(Time.deltaTime, PlayerLocation);
                 break;
         }
     }
-    void Idle(float delta)
+    void Idle()
     {
-        //This needs to have come back to after I get the player class and i can pull the location
-        if (PlayerLocation == EnemyLocation);
+        //increment timer as long as timer less than something
+        if(idleTimer < 5)
         {
-            state = AIState.ATTACK;
+            agent.isStopped = true;
+            idleTimer += Time.deltaTime;
+        } else
+        {
+            agent.isStopped = false; //free up agent
+            patrolTarget = Random.Range(0, goals.Length); //choose a goal
+            agent.SetDestination(goals[patrolTarget].position); //send agent to new goal
+            state = AIState.PATROL; //swap states
+            idleTimer = 0; //reset timer
         }
+
+        //if timer runs out, switch to patrol, set a patrol destination
+
+        Debug.Log(idleTimer);
+        Debug.Log(state);
+        Debug.Log(agent.remainingDistance);
+       
     }
 
-    void Patrol(float delta, Vector3 Destination)
+    void Patrol()
     {
-        agent.Move(Destination*delta*speed);
+        if (agent.remainingDistance < .2f)
+        {
+            //Make Random
+            state = AIState.IDLE;
+        }
+        
+        Debug.Log(agent.remainingDistance);
     }
 }
